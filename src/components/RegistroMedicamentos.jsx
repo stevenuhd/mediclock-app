@@ -1,25 +1,43 @@
-import { useState } from 'react';
-import { medicamentos as mockMeds } from '../data/mockData';
+import { useState } from "react";
+import { medicamentos as mockMeds } from "../data/mockData";
 
 export function RegistroMedicamentos() {
   const [meds, setMeds] = useState(mockMeds);
-  const [nombre, setNombre] = useState('');
-  const [dosis, setDosis] = useState('');
-  const [hora, setHora] = useState('');
+  const [nombre, setNombre] = useState("");
+  const [dosis, setDosis] = useState("");
+  const [hora, setHora] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // 1. Validation: Ensure no inputs are empty or just whitespace
+    if (!nombre.trim() || !dosis.trim() || !hora.trim()) {
+      alert("Por favor, complete todos los campos.");
+      return;
+    }
+
+    // 2. Validation: Name should not contain numbers
+    // This regex checks if there is any digit (0-9) in the string
+    const containsNumbers = /\d/.test(nombre);
+    if (containsNumbers) {
+      alert("El nombre del medicamento no puede contener números.");
+      return;
+    }
+
     const newMed = {
       id: Date.now(),
-      nombre,
-      dosis,
-      hora,
+      nombre: nombre.trim(),
+      dosis: dosis.trim(),
+      hora: hora.trim(),
       tomado: false,
     };
+
     setMeds([...meds, newMed]);
-    setNombre('');
-    setDosis('');
-    setHora('');
+
+    // Reset form
+    setNombre("");
+    setDosis("");
+    setHora("");
   };
 
   return (
@@ -39,6 +57,8 @@ export function RegistroMedicamentos() {
                   placeholder="Nombre del medicamento"
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
+                  // The 'required' attribute handles basic empty checks,
+                  // but our JS handles the whitespace-only case.
                   required
                 />
               </div>
@@ -47,14 +67,16 @@ export function RegistroMedicamentos() {
                 <input
                   type="text"
                   className="form-control form-control-lg input-custom"
-                  placeholder="Dosis"
+                  placeholder="Ej: 500mg o 1 tableta"
                   value={dosis}
                   onChange={(e) => setDosis(e.target.value)}
                   required
                 />
               </div>
               <div className="mb-4">
-                <label className="form-label text-muted small">Hora del día</label>
+                <label className="form-label text-muted small">
+                  Hora del día
+                </label>
                 <input
                   type="time"
                   className="form-control form-control-lg input-custom"
@@ -63,7 +85,10 @@ export function RegistroMedicamentos() {
                   required
                 />
               </div>
-              <button type="submit" className="btn btn-primary-custom w-100 py-3">
+              <button
+                type="submit"
+                className="btn btn-primary-custom w-100 py-3"
+              >
                 Agregar
               </button>
             </form>
@@ -86,9 +111,9 @@ export function RegistroMedicamentos() {
                     </small>
                   </div>
                   <span
-                    className={`badge ${med.tomado ? 'bg-success' : 'bg-secondary'} rounded-pill`}
+                    className={`badge ${med.tomado ? "bg-success" : "bg-secondary"} rounded-pill`}
                   >
-                    {med.tomado ? '✓' : 'Pendiente'}
+                    {med.tomado ? "✓" : "Pendiente"}
                   </span>
                 </li>
               ))}

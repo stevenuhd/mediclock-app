@@ -8,7 +8,7 @@ export function Welcome() {
         <div className="row align-items-center g-5">
           <div className="col-lg-6">
             <h1 className="welcome-logo mb-3">
-              VITALITY<span className="text-accent">+</span>
+              MEDI<span className="text-accent">CLOCK</span>
             </h1>
             <p className="welcome-text mb-4">Bienvenido a tu asistente de salud diaria.</p>
             <Link to="/registro" className="btn btn-primary-custom btn-lg px-5 py-3">

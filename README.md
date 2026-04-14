@@ -1,4 +1,13 @@
-# MediClock App - VITALITY+
+#Alumnos- grupo 3
+
+anibal valderrama moya
+jose hermosilla avila
+miguel rojas otero
+esteban perez castillo
+
+
+
+# MediClock App - MEDICLOCK
 
 Aplicación web de gestión de medicamentos desarrollada con React + Vite.
 

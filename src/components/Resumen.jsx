@@ -1,8 +1,42 @@
-import { resumenSemanal, medicamentos } from '../data/mockData';
+import { useEffect, useMemo, useState } from 'react';
+import { resumenSemanal as mockResumen, medicamentos as mockMedicamentos } from '../data/mockData';
 import { ProgressRing } from '../assets/Icons';
+import {
+  computeWeeklySummary,
+  getMedicamentos,
+  getTomas,
+  mergeMedsWithTomas,
+} from '../services/api';
 
 export function Resumen() {
-  const pct = resumenSemanal.porcentaje;
+  const [medicamentos, setMedicamentos] = useState(mockMedicamentos);
+  const [resumenSemanal, setResumenSemanal] = useState(mockResumen);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadData() {
+      try {
+        const [meds, tomas] = await Promise.all([getMedicamentos(), getTomas()]);
+        if (!cancelled) {
+          setMedicamentos(mergeMedsWithTomas(meds, tomas));
+          setResumenSemanal(computeWeeklySummary(tomas));
+        }
+      } catch {
+        if (!cancelled) {
+          setMedicamentos(mockMedicamentos);
+          setResumenSemanal(mockResumen);
+        }
+      }
+    }
+
+    loadData();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const pct = useMemo(() => resumenSemanal.porcentaje, [resumenSemanal]);
 
   return (
     <div className="screen resumen-screen py-5 px-4">

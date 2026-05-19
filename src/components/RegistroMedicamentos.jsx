@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { medicamentos as mockMeds } from "../data/mockData";
+import { createMedicamento, getMedicamentos } from "../services/api";
 
 export function RegistroMedicamentos() {
   const [meds, setMeds] = useState(mockMeds);
@@ -7,7 +8,29 @@ export function RegistroMedicamentos() {
   const [dosis, setDosis] = useState("");
   const [hora, setHora] = useState("");
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadMeds() {
+      try {
+        const apiMeds = await getMedicamentos();
+        if (!cancelled) {
+          setMeds(apiMeds);
+        }
+      } catch {
+        if (!cancelled) {
+          setMeds(mockMeds);
+        }
+      }
+    }
+
+    loadMeds();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // 1. Validation: Ensure no inputs are empty or just whitespace
@@ -24,15 +47,23 @@ export function RegistroMedicamentos() {
       return;
     }
 
-    const newMed = {
-      id: Date.now(),
+    const payload = {
       nombre: nombre.trim(),
       dosis: dosis.trim(),
       hora: hora.trim(),
-      tomado: false,
     };
 
-    setMeds([...meds, newMed]);
+    try {
+      const created = await createMedicamento(payload);
+      setMeds((prev) => [...prev, created]);
+    } catch {
+      const localNewMed = {
+        id: Date.now(),
+        ...payload,
+        tomado: false,
+      };
+      setMeds((prev) => [...prev, localNewMed]);
+    }
 
     // Reset form
     setNombre("");
